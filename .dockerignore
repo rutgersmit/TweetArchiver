@@ -5,3 +5,4 @@
 .vscode
 tests.py
 build-and-push.sh
+config.json
