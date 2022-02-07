@@ -1,8 +1,10 @@
 from os import path
+from xml.etree.ElementInclude import include
+import os
 import tweepy
 import logic.config
 
-from credentials import *
+#from credentials import *
 from logic.screenshotter import Screenshotter
 
 
@@ -14,7 +16,7 @@ def get_last_id(username) -> int:
     with open(n, 'r') as f:
         val = f.readline()
         f.close()
-        
+
         return int(val)
 
 
@@ -25,8 +27,10 @@ def set_last_id(username, id) -> None:
         f.close()
 
 
-def run():
-    username = logic.config.get_config('twitterhandle')
+def run(username):
+    include_rts = logic.config.get_config('twitter_include_retweets')
+    exclude_replies = logic.config.get_config('twitter_exclude_replies')
+
     seleniumurl = logic.config.get_config('seleniumurl')
     consumer_key = logic.config.get_config('consumer_key')
     consumer_secret = logic.config.get_config('consumer_secret')
@@ -43,18 +47,19 @@ def run():
     since_id = get_last_id(username)
 
     tweets = api.user_timeline(screen_name=username,
-                            # 200 is the maximum allowed count
-                            count=200,
-                            include_rts=False,
-                            # Necessary to keep full_text
-                            # otherwise only the first 140 words are extracted
-                            #tweet_mode='extended',
-                            since_id=since_id
-                            )
+                               # 200 is the maximum allowed count
+                               count=200,
+                               include_rts=include_rts,
+                               exclude_replies=exclude_replies,
+                               # Necessary to keep full_text
+                               # otherwise only the first 140 words are extracted
+                               # tweet_mode='extended',
+                               since_id=since_id
+                               )
 
     shotter = Screenshotter()
     shotter.init_driver(seleniumurl)
-    
+
     tweets.reverse()
     for tweet in tweets:
         print("ID: {}".format(tweet.id))
@@ -71,5 +76,8 @@ def run():
     else:
         print(f"No new tweets for {username}")
 
+
 if __name__ == '__main__':
-    run()
+    usernames = logic.config.get_config('twitter_handles').split(',')
+    for username in usernames:
+        run(username)

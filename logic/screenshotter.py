@@ -45,7 +45,7 @@ class Screenshotter():
         time.sleep(3) #really? Yes, really! Need this time to load data async.
         driver.execute_script("window.scrollTo(0, 0);")
 
-        datadir = f"data/{username}/"
+        datadir = f"data/{username.lower()}/"
         if not path.isdir(datadir):
             os.makedirs(datadir)
 
