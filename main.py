@@ -1,6 +1,7 @@
 from os import path
 from xml.etree.ElementInclude import include
 import os
+import time
 import tweepy
 import logic.config
 
@@ -79,5 +80,8 @@ def run(username):
 
 if __name__ == '__main__':
     usernames = logic.config.get_config('twitter_handles').split(',')
-    for username in usernames:
-        run(username)
+    while True:
+        for username in usernames:
+            run(username)
+            time.sleep(int(logic.config.get_config('checkinterval')))
+            
