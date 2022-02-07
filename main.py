@@ -18,6 +18,8 @@ def get_last_id(username) -> int:
         val = f.readline()
         f.close()
 
+        print(f"Last id for {username}: {val}")
+
         return int(val)
 
 
@@ -26,6 +28,7 @@ def set_last_id(username, id) -> None:
     with open(n, 'w') as f:
         f.write(str(id))
         f.close()
+
 
 
 def run(username):
@@ -46,7 +49,7 @@ def run(username):
     api = tweepy.API(auth)
 
     since_id = get_last_id(username)
-
+    print(f"{username}, {include_rts}, {exclude_replies}, {since_id}")
     tweets = api.user_timeline(screen_name=username,
                                # 200 is the maximum allowed count
                                count=200,
@@ -71,10 +74,9 @@ def run(username):
         #loc = shotter.screenshot(info.author.screen_name, info.id)
         loc = shotter.screenshot(tweet)
         print(f"Saved at {loc}", flush=True)
-
-    if len(tweets) > 0:
-        set_last_id(username, tweets[0].id)
-    else:
+        set_last_id(username, tweet.id)
+        
+    if len(tweets) < 1:
         print(f"No new tweets for {username}")
 
 
